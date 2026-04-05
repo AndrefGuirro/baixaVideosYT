@@ -1,16 +1,20 @@
-import sys
-
 from pytubefix import YouTube
-from pytubefix.cli import on_progress
+import os
+import re
 
-sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+def limpar_nome(nome):
+    return re.sub(r'[\\/*?:"<>|]', "", nome)
 
-url = "https://www.youtube.com/watch?v=-UEE9h9QqjM&t=7s"
+def baixar_video(url, pasta="downloads"):
+    if not os.path.exists(pasta):
+        os.makedirs(pasta)
 
-yt = YouTube(url, on_progress_callback=on_progress)
+    yt = YouTube(url)
 
-print (f"Title: {yt.title}")
-print (f"author: {yt.author}")
+    titulo = limpar_nome(yt.title)
 
-ys = yt.streams.get_highest_resolution()
-ys.download()
+    stream = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first()
+
+    caminho = stream.download(output_path=pasta, filename=titulo)
+
+    return caminho

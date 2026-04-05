@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Baixar Vídeo</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      margin-top: 80px;
+    }
+
+    input {
+      width: 60%;
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Baixar Vídeo do YouTube</h1>
+
+  <input type="text" id="url" placeholder="Cole o link aqui">
+
+  <br>
+
+  <button onclick="colar()">Colar</button>
+  <button onclick="baixar()">Baixar</button>
+
+  <p id="status"></p>
+
+  <script>
+    async function colar() {
+      try {
+        const texto = await navigator.clipboard.readText();
+        document.getElementById("url").value = texto;
+      } catch {
+        alert("Não foi possível colar");
+      }
+    }
+
+    function baixar() {
+      const url = document.getElementById("url").value;
+
+      if (!url) {
+        alert("Cole um link primeiro!");
+        return;
+      }
+
+      document.getElementById("status").innerText = "Baixando...";
+
+      // envia como form (preserva nome do arquivo)
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = "/download";
+
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = "url";
+      input.value = url;
+
+      form.appendChild(input);
+      document.body.appendChild(form);
+      form.submit();
+    }
+  </script>
+
+</body>
+</html>

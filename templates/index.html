@@ -162,7 +162,14 @@
       </div>
     </form>
 
-    <div id="message" class="message error hidden"></div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="message {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
     <div class="note">O download será iniciado pelo navegador.</div>
   </main>
 
@@ -174,14 +181,6 @@
       } catch (error) {
         alert("Não foi possível acessar a área de transferência.");
       }
-    }
-
-    const params = new URLSearchParams(window.location.search);
-    const errorText = params.get("error");
-    if (errorText) {
-      const message = document.getElementById("message");
-      message.textContent = decodeURIComponent(errorText);
-      message.classList.remove("hidden");
     }
   </script>
 </body>

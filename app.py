@@ -1,11 +1,11 @@
 import os
-import urllib.parse
 
-from flask import Flask, redirect, render_template, request, send_file, url_for
+from flask import Flask, flash, redirect, render_template, request, send_file, url_for
 
 from main import baixar_midia
 
 app = Flask(__name__)
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "change-this-secret")
 app.config["MAX_CONTENT_LENGTH"] = 200 * 1024 * 1024
 
 
@@ -22,16 +22,16 @@ def download():
     tipo = (request.form.get("tipo") or "video").strip()
 
     if not url:
-        mensagem = urllib.parse.quote("Cole um link válido do YouTube.")
-        return redirect(url_for("home", error=mensagem))
+        flash("Cole um link válido do YouTube.", "error")
+        return redirect(url_for("home"))
 
     try:
         arquivo = baixar_midia(url, tipo)
         nome_arquivo = os.path.basename(arquivo)
         return send_file(arquivo, as_attachment=True, download_name=nome_arquivo)
     except Exception as exc:
-        mensagem = urllib.parse.quote(f"Não foi possível concluir o download: {exc}")
-        return redirect(url_for("home", error=mensagem))
+        flash(f"Não foi possível concluir o download: {exc}", "error")
+        return redirect(url_for("home"))
 
 
 if __name__ == "__main__":

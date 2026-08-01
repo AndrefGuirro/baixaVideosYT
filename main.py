@@ -8,6 +8,7 @@ import time
 from pathlib import Path
 
 import yt_dlp
+from yt_dlp.utils import DownloadError
 
 BASE_DIR = Path(__file__).resolve().parent
 DOWNLOADS_DIR = BASE_DIR / "downloads"
@@ -67,8 +68,17 @@ def baixar_midia(url: str, tipo: str = "video") -> str:
         "outtmpl": str(pasta_destino / "%(title)s.%(ext)s"),
     }
 
-    with yt_dlp.YoutubeDL(download_opts) as ydl:
-        ydl.download([url])
+    try:
+        with yt_dlp.YoutubeDL(download_opts) as ydl:
+            ydl.download([url])
+    except DownloadError as exc:
+        mensagem = str(exc)
+        if "Sign in to confirm you\'re not a bot" in mensagem or "This video is unavailable" in mensagem:
+            raise RuntimeError(
+                "O YouTube está bloqueando este download. "
+                "Tente outro vídeo ou use um link diferente."
+            ) from exc
+        raise
 
     arquivos = [p for p in pasta_destino.iterdir() if p.is_file()]
     if not arquivos:

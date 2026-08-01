@@ -52,6 +52,8 @@ def baixar_midia(url: str, tipo: str = "video") -> str:
         "restrictfilenames": True,
         "socket_timeout": 30,
         "http_headers": {"User-Agent": "Mozilla/5.0"},
+        "geo_bypass": True,
+        "geo_bypass_country": "US",
     }
 
     with yt_dlp.YoutubeDL({**ydl_opts, "skip_download": True}) as ydl:
